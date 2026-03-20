@@ -6,13 +6,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.btl_g9_trenlop.R;
 import com.example.btl_g9_trenlop.model.Room;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * VIEW LAYER - Adapter
@@ -57,7 +60,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RoomViewHolder holder, int position) {
-        // TODO: Bind dữ liệu room vào holder
         Room room = roomList.get(position);
         holder.bind(room);
     }
@@ -76,7 +78,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     // -------------------------------------------------------------------------
     class RoomViewHolder extends RecyclerView.ViewHolder {
 
-        // TODO: Khai báo các View theo item_room.xml
         TextView tvRoomName;
         TextView tvRoomPrice;
         TextView tvRoomStatus;
@@ -85,7 +86,6 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
         RoomViewHolder(@NonNull View itemView) {
             super(itemView);
-            // TODO: ánh xạ findViewById
             tvRoomName     = itemView.findViewById(R.id.tv_room_name);
             tvRoomPrice    = itemView.findViewById(R.id.tv_room_price);
             tvRoomStatus   = itemView.findViewById(R.id.tv_room_status);
@@ -94,9 +94,29 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         }
 
         void bind(Room room) {
-            // TODO: Hiển thị tên, giá, trạng thái
-            // TODO: Tô màu statusIndicator và tvRoomStatus theo room.getStatus()
-            // TODO: Ẩn/hiện tvTenantName theo trạng thái
+            tvRoomName.setText(room.getName());
+
+            // Định dạng tiền tệ VNĐ
+            NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            tvRoomPrice.setText(formatter.format(room.getPrice()));
+
+            if (room.getStatus() == Room.Status.AVAILABLE) {
+                tvRoomStatus.setText(R.string.status_available);
+                tvRoomStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.status_available));
+                statusIndicator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.status_available));
+                tvTenantName.setVisibility(View.GONE);
+            } else {
+                tvRoomStatus.setText(R.string.status_rented);
+                tvRoomStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.status_rented));
+                statusIndicator.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.status_rented));
+                
+                String tenantInfo = "Khách: " + room.getTenantName();
+                if (room.getPhone() != null && !room.getPhone().isEmpty()) {
+                    tenantInfo += " (" + room.getPhone() + ")";
+                }
+                tvTenantName.setText(tenantInfo);
+                tvTenantName.setVisibility(View.VISIBLE);
+            }
 
             // Click
             itemView.setOnClickListener(v -> {

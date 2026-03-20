@@ -26,8 +26,6 @@ import java.util.List;
  */
 public class AddEditRoomActivity extends AppCompatActivity {
 
-    public static final String EXTRA_ROOM_ID = "EXTRA_ROOM_ID";
-
     private EditText etRoomName, etRoomPrice, etTenantName, etPhone;
     private Spinner spinnerStatus;
     private Button btnSave;
@@ -71,14 +69,15 @@ public class AddEditRoomActivity extends AppCompatActivity {
     }
 
     private void checkMode() {
-        if (getIntent().hasExtra(EXTRA_ROOM_ID)) {
-            roomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
+        // Sử dụng hằng số từ MainActivity để đồng bộ
+        if (getIntent().hasExtra(MainActivity.EXTRA_ROOM_ID)) {
+            roomId = getIntent().getStringExtra(MainActivity.EXTRA_ROOM_ID);
             isEditMode = true;
-            setTitle(R.string.edit_room);
+            setTitle(getString(R.string.edit_room));
             loadRoomData();
         } else {
             isEditMode = false;
-            setTitle(R.string.add_room);
+            setTitle(getString(R.string.add_room));
         }
     }
 
@@ -95,7 +94,8 @@ public class AddEditRoomActivity extends AppCompatActivity {
 
         if (roomToEdit != null) {
             etRoomName.setText(roomToEdit.getName());
-            etRoomPrice.setText(String.valueOf(roomToEdit.getPrice()));
+            // Tránh hiển thị số dạng 1.0E7
+            etRoomPrice.setText(String.format("%.0f", roomToEdit.getPrice()));
             etTenantName.setText(roomToEdit.getTenantName());
             etPhone.setText(roomToEdit.getPhone());
             

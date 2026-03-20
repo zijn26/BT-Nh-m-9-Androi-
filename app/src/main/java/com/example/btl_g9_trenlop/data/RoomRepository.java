@@ -19,7 +19,8 @@ public class RoomRepository {
     private final List<Room> roomList = new ArrayList<>();
 
     private RoomRepository() {
-        // TODO: (Tuỳ chọn) Thêm dữ liệu mẫu để test
+        // Seed data: dữ liệu mẫu để test
+        seedData();
     }
 
     public static synchronized RoomRepository getInstance() {
@@ -29,27 +30,121 @@ public class RoomRepository {
         return instance;
     }
 
-    // TODO: Implement getAllRooms()
+    // ─── Seed Data ─────────────────────────────────────────────────────────────
+
+    /**
+     * Thêm dữ liệu mẫu vào danh sách khi khởi tạo lần đầu.
+     */
+    private void seedData() {
+        roomList.add(new Room(
+                generateId(),
+                "Phòng 101",
+                2_500_000,
+                Room.Status.RENTED,
+                "Nguyễn Văn An",
+                "0901234567"
+        ));
+
+        // Delay 1ms để tránh trùng timestamp ID
+        try { Thread.sleep(1); } catch (InterruptedException ignored) { }
+
+        roomList.add(new Room(
+                generateId(),
+                "Phòng 102",
+                2_000_000,
+                Room.Status.AVAILABLE,
+                "",
+                ""
+        ));
+
+        try { Thread.sleep(1); } catch (InterruptedException ignored) { }
+
+        roomList.add(new Room(
+                generateId(),
+                "Phòng 103",
+                3_000_000,
+                Room.Status.RENTED,
+                "Trần Thị Bình",
+                "0912345678"
+        ));
+
+        try { Thread.sleep(1); } catch (InterruptedException ignored) { }
+
+        roomList.add(new Room(
+                generateId(),
+                "Phòng 201",
+                2_200_000,
+                Room.Status.AVAILABLE,
+                "",
+                ""
+        ));
+
+        try { Thread.sleep(1); } catch (InterruptedException ignored) { }
+
+        roomList.add(new Room(
+                generateId(),
+                "Phòng 202",
+                3_500_000,
+                Room.Status.RENTED,
+                "Lê Minh Châu",
+                "0987654321"
+        ));
+    }
+
+    // ─── CRUD Methods ──────────────────────────────────────────────────────────
+
+    /**
+     * Lấy toàn bộ danh sách phòng (trả về bản sao để tránh bị chỉnh sửa ngoài).
+     */
     public List<Room> getAllRooms() {
         return new ArrayList<>(roomList);
     }
 
-    // TODO: Implement addRoom(Room room)
+    /**
+     * Thêm một phòng mới vào danh sách.
+     *
+     * @param room Phòng cần thêm (không được null)
+     */
     public void addRoom(Room room) {
-        // ...
+        if (room == null) return;
+        roomList.add(room);
     }
 
-    // TODO: Implement updateRoom(Room room) - tìm theo id rồi thay thế
+    /**
+     * Cập nhật thông tin phòng đã có (tìm theo id, thay thế toàn bộ).
+     *
+     * @param room Phòng với dữ liệu mới (phải có id trùng với phòng cần cập nhật)
+     */
     public void updateRoom(Room room) {
-        // ...
+        if (room == null || room.getId() == null) return;
+        for (int i = 0; i < roomList.size(); i++) {
+            if (roomList.get(i).getId().equals(room.getId())) {
+                roomList.set(i, room);
+                return;
+            }
+        }
     }
 
-    // TODO: Implement deleteRoom(Room room) - tìm theo id rồi xóa
+    /**
+     * Xóa một phòng khỏi danh sách (tìm theo id).
+     *
+     * @param room Phòng cần xóa (phải có id hợp lệ)
+     */
     public void deleteRoom(Room room) {
-        // ...
+        if (room == null || room.getId() == null) return;
+        for (int i = 0; i < roomList.size(); i++) {
+            if (roomList.get(i).getId().equals(room.getId())) {
+                roomList.remove(i);
+                return;
+            }
+        }
     }
 
-    /** Sinh ID duy nhất dựa trên timestamp */
+    // ─── Utility ───────────────────────────────────────────────────────────────
+
+    /**
+     * Sinh ID duy nhất dựa trên timestamp hiện tại.
+     */
     public static String generateId() {
         return String.valueOf(System.currentTimeMillis());
     }
